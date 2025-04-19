@@ -1,0 +1,8 @@
+services:
+  msinventory:
+    build: .
+    container_name: msinventory
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
