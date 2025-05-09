@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id                Int                @id @default(autoincrement())
+  order_number      String
+  delivery_id       Int
+  final_address_id  Int
+  state             String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
+  stockTransactions StockTransaction[]
+  delivery          Delivery           @relation(fields: [delivery_id], references: [id])
+  final_address     Location           @relation(fields: [final_address_id], references: [id])
+}
+
+model Stock {
+  id                Int                @id @default(autoincrement())
+  amount            Int
+  product_id        String
+  storage_id        String
+  stockTransactions StockTransaction[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
+  Product           Product            @relation(fields: [product_id], references: [id])
+  Storage           Storage            @relation(fields: [storage_id], references: [id])
+  @@unique([product_id, storage_id])
+}
+
+model StockTransaction {
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  stock_id  Int
+  order_id  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  Order     Order    @relation(fields: [order_id], references: [id])
+  Stock     Stock    @relation(fields: [stock_id], references: [id])
+}
+
+model Delivery {
+  id          Int      @id @default(autoincrement())
+  user_id     String
+  full_name   String
+  location_id Int
+  orders      Order[]
+  location    Location @relation(fields: [location_id], references: [id])
+}
+
+model Location {
+  id         Int        @id @default(autoincrement())
+  altitude   String     
+  latitude   String
+  static     Boolean
+  address    String
+  city       String
+  department String
+  order      Order[]
+  delivery   Delivery[]
+  storage    Storage[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now()) @updatedAt
+  @@unique([latitude, altitude])
+}
+
+model Product {
+  id          String  @id
+  name        String
+  category    String
+  description String
+  price       Decimal  @db.Decimal(10, 2)
+  picture     String
+  stock       Stock[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  fragile    Boolean
+  providerProducts ProviderProduct[]
+}
+
+model Storage {
+  id          String   @id
+  name        String
+  manager_id    Int
+  location_id Int
+  capacity   Int
+  stock       Stock[]
+  location    Location @relation(fields: [location_id], references: [id])
+  manager       Manager    @relation(fields: [manager_id], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+
+model Manager {
+  id        Int       @id @default(autoincrement())
+  user_id   String
+  full_name String
+  state   String
+  email     String @unique
+  phone     String    
+  Storage   Storage[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model MailTemplates {
+  id        Int      @id @default(autoincrement())
+  event     String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  isActive  Boolean  @default(true)
+}
+
+model MessageTemplates {
+  id        Int      @id @default(autoincrement())
+  event     String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  isActive  Boolean  @default(true)
+}
+
+model Provider {
+  id        String   @id
+  name     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  providerProducts ProviderProduct[]
+}
+
+model ProviderProduct {
+  id        Int      @id @default(autoincrement())
+  product_id String 
+  provider_id String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  Product   Product  @relation(fields: [product_id], references: [id])
+  Provider  Provider @relation(fields: [provider_id], references: [id])
+  @@unique([product_id, provider_id])
+}
