@@ -8,17 +8,15 @@ import {
   UseInterceptors,
   Body,
 } from '@nestjs/common';
-import { stat } from 'fs';
 const { Readable } = require('stream'); 
 const csv = require('csv-parser');
-import { Module } from '@nestjs/common';
-import { GeneralInventoryModule } from './inventory.module';
-import * as Papa from 'papaparse';
+import { GeneralService } from 'src/common/general.service';
 
 
 
 @Controller('GeneralInventory')
 export class GeneralInventoryController {
+  constructor(private readonly generalService: GeneralService) {}
   @Post('uploadInventory')
   @UseInterceptors(FileInterceptor('file'))
   async uploadInventory(
@@ -59,84 +57,84 @@ export class GeneralInventoryController {
         const productData = inventoryData
           .filter((item) => item.section === 'product')
           .map((item) => item.data);
-        // const storagePromises = await storageData.map(async (row) => {
-        //   try {        
-        //     const {
-        //       id_almacen,
-        //       nombre_almacen,
-        //       direccion,
-        //       ciudad,
-        //       departamento,
-        //       pais,
-        //       codigo_postal,
-        //       latitud,
-        //       longitud,
-        //       gerente,
-        //       telefono,
-        //       capacidad_m2,
-        //       estado,
-        //       email,
-        //     } = row;
+        const storagePromises = await storageData.map(async (row) => {
+          try {        
+            const {
+              id_almacen,
+              nombre_almacen,
+              direccion,
+              ciudad,
+              departamento,
+              pais,
+              codigo_postal,
+              latitud,
+              longitud,
+              gerente,
+              telefono,
+              capacidad_m2,
+              estado,
+              email,
+            } = row;
       
-        //     const manager = await prisma.manager.upsert({
-        //       where: { email },
-        //       update: {
-        //         full_name: gerente,
-        //         email,
-        //         phone: telefono,
-        //         user_id: '',
-        //         state: 'ACT',
-        //       },
-        //       create: {
-        //         full_name: gerente,
-        //         email,
-        //         phone: telefono,
-        //         user_id: '',
-        //         state: 'ACT',
-        //       },
-        //     });        
-        //     const location = await prisma.location.upsert({
-        //       where: {
-        //         latitude_altitude: {
-        //         latitude: latitud.toString(),
-        //         altitude: longitud.toString(),
-        //       }},
-        //       update: {
-        //       static: true,
-        //       address: direccion,
-        //       city: ciudad,
-        //       department: departamento,
-        //       },
-        //       create: {
-        //       latitude: latitud.toString(),
-        //       altitude: longitud.toString(),
-        //       static: true,
-        //       address: direccion,
-        //       city: ciudad,
-        //       department: departamento,
-        //       },
-        //     });        
-        //     const storage = await prisma.storage.upsert({
-        //       where: { id: id_almacen },
-        //       update: {
-        //         name: nombre_almacen,
-        //         manager_id: manager.id,
-        //         location_id: location.id,
-        //         capacity: parseInt(capacidad_m2),
-        //       },
-        //       create: {
-        //         id: id_almacen,
-        //         name: nombre_almacen,
-        //         manager_id: manager.id,
-        //         location_id: location.id,
-        //         capacity: parseInt(capacidad_m2),
-        //       },
-        //     });
+            const manager = await prisma.manager.upsert({
+              where: { email },
+              update: {
+                full_name: gerente,
+                email,
+                phone: telefono,
+                user_id: '',
+                state: 'ACT',
+              },
+              create: {
+                full_name: gerente,
+                email,
+                phone: telefono,
+                user_id: '',
+                state: 'ACT',
+              },
+            });        
+            const location = await prisma.location.upsert({
+              where: {
+                latitude_altitude: {
+                latitude: latitud.toString(),
+                altitude: longitud.toString(),
+              }},
+              update: {
+              static: true,
+              address: direccion,
+              city: ciudad,
+              department: departamento,
+              },
+              create: {
+              latitude: latitud.toString(),
+              altitude: longitud.toString(),
+              static: true,
+              address: direccion,
+              city: ciudad,
+              department: departamento,
+              },
+            });        
+            const storage = await prisma.storage.upsert({
+              where: { id: id_almacen },
+              update: {
+                name: nombre_almacen,
+                manager_id: manager.id,
+                location_id: location.id,
+                capacity: parseInt(capacidad_m2),
+              },
+              create: {
+                id: id_almacen,
+                name: nombre_almacen,
+                manager_id: manager.id,
+                location_id: location.id,
+                capacity: parseInt(capacidad_m2),
+              },
+            });
         
-        //   } catch (error) {
-        //     console.error('Error processing row:', row, error);
-        //   }
-        // });
+          } catch (error) {
+            console.error('Error processing row:', row, error);
+          }
+        });
          const productPromises = productData.map(async (rowProduct) => {
           try {        
             const {
