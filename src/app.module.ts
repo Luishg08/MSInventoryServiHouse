@@ -6,10 +6,11 @@ import { StorageController } from './Storage/storage.controller';
 import { GeneralInventoryController } from './Inventory/inventory.controller';
 import { ProductModule } from './Products/product.module';
 import { GeneralModule } from './common/general.module';
+import { StockController } from './Stock/stock.controller';
 
 @Module({
   imports: [ProductModule, GeneralModule],
-  controllers: [ProductController, StorageController, GeneralInventoryController],
+  controllers: [ProductController, StorageController, GeneralInventoryController, StockController],
   providers: [],
 })
 export class AppModule {}
