@@ -24,4 +24,16 @@ export class StockController {
         }
         return res.json(stock);
     }
+     @Get('stockByStorage/:id')
+    async getStockByStorage(@Param('id') id: string, @Res() res: Response) {
+        const stock = await prisma.stock.findMany({
+            where: {
+                storage_id: id
+            }
+        });
+        if (stock.length === 0) {
+            return res.status(404).json({ message: 'No stock found for this storage' });
+        }
+        return res.json(stock);
+    }
 }
