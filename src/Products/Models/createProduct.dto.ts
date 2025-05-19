@@ -24,4 +24,9 @@ export class createProductDto {
   @IsBoolean()
   @IsNotEmpty()
   fragile : boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  id : string;
+  
 }
