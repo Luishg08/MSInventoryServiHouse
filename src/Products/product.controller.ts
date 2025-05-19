@@ -29,6 +29,16 @@ export class ProductController {
       });
     }
     try {
+      const exists = await prisma.product.findUnique({
+        where: { id: dto.id },
+      });
+      if (exists) {
+        return res.status(409).json({
+          success: false,
+          status: 409,
+          message: 'Product already exists',
+        });
+      }
       const product = await prisma.product.create({
         data: {
           id: dto.id,
