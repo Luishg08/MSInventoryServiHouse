@@ -244,14 +244,14 @@ async deleteStorage(@Res() res: Response, @Param('id') id: string, @Req() req: R
     @UploadedFile() file: Express.Multer.File, @Res() res: Response, @Req() req: Request
   )
   {
-    const { message, success } = this.generalService.verifyToken(req, 'uploadFile');
-    if (!success) {
-        return res.status(401).json({
-            status: false,
-            code: 401,
-            message: message
-        });
-    }
+    // const { message, success } = this.generalService.verifyToken(req, 'uploadFile');
+    // if (!success) {
+    //     return res.status(401).json({
+    //         status: false,
+    //         code: 401,
+    //         message: message
+    //     });
+    // }
     if (!file || file.mimetype !== 'text/csv') {
       return res.status(400).json({
         success: false,
@@ -372,7 +372,7 @@ async deleteStorage(@Res() res: Response, @Param('id') id: string, @Req() req: R
             this.generalService.logger.error(`Error processing row: ${JSON.stringify(row)} - ${error.message}`);
           }
         });
-          await Promise.all(storagePromises);
+          Promise.all(storagePromises);
           return res.status(200).json({
             success: true,
             status: 200,
