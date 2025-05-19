@@ -9,7 +9,7 @@ const csv = require('csv-parser');
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { GeneralService } from 'src/common/general.service';
+import { GeneralService } from '../common/general.service';
 
 
 @Controller('product')

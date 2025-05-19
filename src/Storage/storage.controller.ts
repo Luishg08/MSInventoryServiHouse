@@ -8,7 +8,7 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as csv from 'csv-parser';
-import { GeneralService } from 'src/common/general.service';
+import { GeneralService } from '../common/general.service';
 import { log } from 'console';
 
 
