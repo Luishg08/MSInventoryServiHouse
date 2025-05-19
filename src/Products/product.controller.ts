@@ -31,6 +31,7 @@ export class ProductController {
     try {
       const product = await prisma.product.create({
         data: {
+          id: dto.id,
           name: dto.name,
           description: dto.description,
           price: dto.price,
@@ -148,6 +149,7 @@ export class ProductController {
       const product = await prisma.product.update({
         where: { id: Number(id) },
         data: {
+          id: dto.id,
           name: dto.name,
           description: dto.description,
           price: dto.price,
