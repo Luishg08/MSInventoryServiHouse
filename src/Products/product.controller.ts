@@ -57,14 +57,14 @@ export class ProductController {
 
   @Get('getAll')
   async getAllProducts(@Res() res: Response, @Req() req: Request) {
-    const { message, success } = this.generalService.verifyToken(req, 'getAllProducts');
-    if (!success) {
-      return res.status(401).json({
-        status: false,
-        code: 401,
-        message: message
-      });
-    }
+    // const { message, success } = this.generalService.verifyToken(req, 'getAllProducts');
+    // if (!success) {
+    //   return res.status(401).json({
+    //     status: false,
+    //     code: 401,
+    //     message: message
+    //   });
+    // }
     try {
       const products = await prisma.product.findMany();
       return res.status(200).json({

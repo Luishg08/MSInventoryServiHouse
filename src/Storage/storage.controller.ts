@@ -74,16 +74,39 @@ async createStorage(
 
 @Get('getAll')
 async getAllStorages(@Res() res: Response, @Req() req: Request) {
-  const { message, success } = this.generalService.verifyToken(req, 'getAllStorages'); 
-    if (!success) {
-        return res.status(401).json({
-            status: false,
-            code: 401,
-            message: message
-        });
-    }
+  // const { message, success } = this.generalService.verifyToken(req, 'getAllStorages'); 
+  //   if (!success) {
+  //       return res.status(401).json({
+  //           status: false,
+  //           code: 401,
+  //           message: message
+  //       });
+  //   }
   try {
-    const storages = await prisma.storage.findMany();
+    const storages = await prisma.storage.findMany({
+      include: {
+        manager: {
+          select: {
+            full_name: true, // solo traes el nombre del manager
+          },
+        },
+        location: {
+          select: {
+            address: true, // solo traes la direccion de la locacion
+            department: true, // solo traes el departamento de la locacion
+            city: true, // solo traes la ciudad de la locacion
+          },
+        },
+      }}
+    );
+    // const newData = storages.map((storage) => {
+    //   storage.manager = (prisma.manager.findUnique({
+    //     where: { id: storage.manager_id },
+    //   })).full_name;
+    //   storage.location = (prisma.location.findUnique({
+    //     where: { id: storage.location_id }
+    //   })).address;
+    // });
     return res.status(200).json({
       success: true,
       status: 200,
