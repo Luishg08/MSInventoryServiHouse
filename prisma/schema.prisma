@@ -25,12 +25,15 @@ model Stock {
   amount            Int
   product_id        String
   storage_id        String
-  stockTransactions StockTransaction[]
+  dispatcher_id     Int?
+  stockTransactions StockTransaction[] 
+  min_amount       Int?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @default(now()) @updatedAt
   Product           Product            @relation(fields: [product_id], references: [id])
   Storage           Storage            @relation(fields: [storage_id], references: [id])
 
+  Dispatcher         Dispatcher?         @relation(fields: [dispatcher_id], references: [id])
   @@unique([product_id, storage_id])
 }
 
@@ -39,6 +42,7 @@ model StockTransaction {
   amount    Int
   stock_id  Int
   order_id  Int
+  restock   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   Order     Order    @relation(fields: [order_id], references: [id])
@@ -99,11 +103,11 @@ model Storage {
 
 model Manager {
   id        Int       @id @default(autoincrement())
-  user_id   String
-  full_name String
-  state     String
-  email     String    @unique
-  phone     String
+  user_id   String?
+  full_name String 
+  state   String     @default("ACTIVE")
+  email     String @unique
+  phone     String    
   Storage   Storage[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
@@ -129,10 +133,10 @@ model MessageTemplates {
 }
 
 model Provider {
-  id               String            @id
-  name             String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @default(now()) @updatedAt
+  id        String   @id
+  name     String  @unique  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   providerProducts ProviderProduct[]
 }
 
@@ -146,4 +150,15 @@ model ProviderProduct {
   Provider    Provider @relation(fields: [provider_id], references: [id])
 
   @@unique([product_id, provider_id])
+}
+
+model Dispatcher {
+  id        Int      @id @default(autoincrement())
+  user_id   String?
+  full_name String
+  email     String @unique
+  phone     String    
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  Stock     Stock[]
 }

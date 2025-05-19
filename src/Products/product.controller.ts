@@ -230,14 +230,14 @@ export class ProductController {
   async uploadProducts(
     @UploadedFile() file: Express.Multer.File, @Res() res: Response, @Req() req: Request
   ) {
-    const { message, success } = this.generalService.verifyToken(req, 'uploadFile');
-    if (!success) {
-      return res.status(401).json({
-        status: false,
-        code: 401,
-        message: message
-      });
-    }
+    // const { message, success } = this.generalService.verifyToken(req, 'uploadFile');
+    // if (!success) {
+    //   return res.status(401).json({
+    //     status: false,
+    //     code: 401,
+    //     message: message
+    //   });
+    // }
     if (!file || file.mimetype !== 'text/csv') {
       return res.status(400).json({
         success: false,
