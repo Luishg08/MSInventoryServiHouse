@@ -36,4 +36,18 @@ export class StockController {
         }
         return res.json(stock);
     }
+
+    @Get('stockTransactions')
+    async getStockTransactions(@Res() res: Response) {
+        const stock = await prisma.stock.findMany({
+            include: {
+                product: true,
+                storage: true
+            }
+        });
+        if (stock.length === 0) {
+            return res.status(404).json({ message: 'No stock found' });
+        }
+        return res.json(stock);
+    }
 }
