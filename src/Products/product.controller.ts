@@ -265,6 +265,14 @@ export class ProductController {
       fileStream
         .pipe(csv({ separator: ';' }))
         .on('data', (row) => {
+          if (row && Object.keys(row).length > 0) {
+        const firstKey = Object.keys(row)[0];
+        if (firstKey.startsWith('\uFEFF')) {
+          const cleanKey = firstKey.replace('\uFEFF', '');
+          row[cleanKey] = row[firstKey];
+          delete row[firstKey];
+        }
+      }
           const requiredColumns = [
             'id_producto',
             'id_almacen',
@@ -295,7 +303,7 @@ export class ProductController {
           };
         })
         .on('end', async () => {
-          const productPromises = productData.map(async (rowProduct) => {
+          for (const rowProduct of productData) {
             try {
               const {
                 id_producto,
@@ -384,10 +392,9 @@ export class ProductController {
                 },
               });
             } catch (error) {
-              console.error('Error processing row:', rowProduct, error);
+              this.generalService.logger.error(`Error: ${error} in row: ${JSON.stringify(rowProduct)}`);
             }
-          });
-          Promise.all(productPromises);
+          };
           return res.status(200).json({
             success: true,
             status: 200,
