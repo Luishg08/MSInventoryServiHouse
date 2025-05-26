@@ -92,9 +92,11 @@ export class StorageController {
           },
           location: {
             select: {
-              address: true, // solo traes la direccion de la locacion
-              department: true, // solo traes el departamento de la locacion
-              city: true, // solo traes la ciudad de la locacion
+              address: true, 
+              department: true,
+              city: true,
+              latitude  : true,
+              altitude  : true,
             },
           },
         }
@@ -287,9 +289,20 @@ export class StorageController {
       const filePath = path.resolve(file.path);
       const fileStream = fs.createReadStream(filePath);
       const storageData = [];
+
+     
+
       fileStream
         .pipe(csv({ separator: ';' }))
         .on('data', (row) => {
+           if (row && Object.keys(row).length > 0) {
+        const firstKey = Object.keys(row)[0];
+        if (firstKey.startsWith('\uFEFF')) {
+          const cleanKey = firstKey.replace('\uFEFF', '');
+          row[cleanKey] = row[firstKey];
+          delete row[firstKey];
+        }
+      }
           const requiredColumns = [
             'id_almacen',
             'nombre_almacen',
@@ -316,7 +329,7 @@ export class StorageController {
           }
         })
         .on('end', async () => {
-          const storagePromises = await storageData.map(async (row) => {
+          for (const row of storageData) {
             try {
               const {
                 id_almacen,
@@ -395,8 +408,8 @@ export class StorageController {
               console.error('Error processing row:', row, error);
               this.generalService.logger.error(`Error processing row: ${JSON.stringify(row)} - ${error.message}`);
             }
-          });
-          Promise.all(storagePromises);
+            
+          }
           return res.status(200).json({
             success: true,
             status: 200,
