@@ -24,7 +24,7 @@ export class StockController {
         }
         return res.json(stock);
     }
-     @Get('stockByStorage/:id')
+    @Get('stockByStorage/:id')
     async getStockByStorage(@Param('id') id: string, @Res() res: Response) {
         const stock = await prisma.stock.findMany({
             where: {
@@ -49,5 +49,40 @@ export class StockController {
             return res.status(404).json({ message: 'No stock found' });
         }
         return res.json(stock);
+    }
+    @Get('verify-stock/:product_id/:storage_id/:amount')
+    async verifyStock(
+        @Res() res: Response,
+        @Param('product_id') product_id: string,
+        @Param('storage_id') storage_id: string,
+        @Param('amount') amount: string
+    ) {
+        const requestedAmount = parseInt(amount, 10);
+        const stock = await prisma.stock.findFirst({
+            where: {
+                product_id,
+                storage_id,
+            },
+        });
+
+        if (!stock) {
+            return res.status(404).json({
+                success: false,
+                message: 'No stock found for this product in this storage'
+            });
+        }
+
+        if (requestedAmount > stock.amount) {
+            return res.status(400).json({
+                success: false,
+                message: `Requested amount exceeds available stock. Available: ${stock.amount}`
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Requested amount is available',
+            available: stock.amount
+        });
     }
 }
