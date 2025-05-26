@@ -92,11 +92,11 @@ export class StorageController {
           },
           location: {
             select: {
-              address: true, 
+              address: true,
               department: true,
               city: true,
-              latitude  : true,
-              altitude  : true,
+              latitude: true,
+              altitude: true,
             },
           },
         }
@@ -178,7 +178,7 @@ export class StorageController {
     }
     try {
       const exists = await prisma.storage.findUnique({
-        where: { id: Number(id) },
+        where: { id: id },
       });
       if (!exists) {
         return res.status(404).json({
@@ -188,10 +188,10 @@ export class StorageController {
         });
       }
       const storage = await prisma.storage.update({
-        where: { id: Number(id) },
+        where: { id: id },
         data: {
           name: dto.name,
-          admin_id: dto.admin_id,
+          manager_id: dto.admin_id,
           location_id: dto.location_id,
         },
       });
@@ -290,19 +290,19 @@ export class StorageController {
       const fileStream = fs.createReadStream(filePath);
       const storageData = [];
 
-     
+
 
       fileStream
         .pipe(csv({ separator: ';' }))
         .on('data', (row) => {
-           if (row && Object.keys(row).length > 0) {
-        const firstKey = Object.keys(row)[0];
-        if (firstKey.startsWith('\uFEFF')) {
-          const cleanKey = firstKey.replace('\uFEFF', '');
-          row[cleanKey] = row[firstKey];
-          delete row[firstKey];
-        }
-      }
+          if (row && Object.keys(row).length > 0) {
+            const firstKey = Object.keys(row)[0];
+            if (firstKey.startsWith('\uFEFF')) {
+              const cleanKey = firstKey.replace('\uFEFF', '');
+              row[cleanKey] = row[firstKey];
+              delete row[firstKey];
+            }
+          }
           const requiredColumns = [
             'id_almacen',
             'nombre_almacen',
@@ -408,7 +408,7 @@ export class StorageController {
               console.error('Error processing row:', row, error);
               this.generalService.logger.error(`Error processing row: ${JSON.stringify(row)} - ${error.message}`);
             }
-            
+
           }
           return res.status(200).json({
             success: true,
