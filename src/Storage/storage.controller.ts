@@ -467,5 +467,38 @@ export class StorageController {
       });
     }
   }
-
+  @Get('stock/:id')
+  async getStorageStockById(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Req() req: Request
+  ) {
+    try {
+      const storage = await prisma.storage.findUnique({
+        where: { id: id },
+        include: {
+          stock: true, // Incluye todo el stock relacionado
+        },
+      });
+      if (!storage) {
+        return res.status(404).json({
+          success: false,
+          status: 404,
+          message: 'Storage not found',
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        status: 200,
+        data: storage.stock,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        status: 500,
+        message: 'Error fetching storage stock.',
+        error: error.message,
+      });
+    }
+  }
 }
