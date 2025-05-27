@@ -137,7 +137,7 @@ export class StorageController {
     }
     try {
       const storage = await prisma.storage.findUnique({
-        where: { id: Number(id) },
+        where: { id:id },
       });
       if (!storage) {
         return res.status(404).json({
