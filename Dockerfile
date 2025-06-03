@@ -6,7 +6,11 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+COPY .env .env
+
 RUN npm run build
+
+RUN npx prisma generate
 
 FROM node:20-alpine
 

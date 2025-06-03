@@ -11,7 +11,7 @@ async function bootstrap() {
     origin: '*', 
     credentials: true,
   });
-  app.setGlobalPrefix('api/v1/inventory/')
+  app.setGlobalPrefix('api/inventory/')
   const config = new DocumentBuilder()
     .setTitle('MSInventory')
     .setDescription('Documentación de la API de MSInventory')
@@ -20,7 +20,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/Inventory/docs', app, document);
   const PORT = process.env.PORT || 3000;
-  await app.listen(PORT);
+  await app.listen(PORT, '0.0.0.0');
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

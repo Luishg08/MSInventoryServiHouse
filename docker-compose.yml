@@ -6,3 +6,9 @@ services:
       - "${PORT}:${PORT}"
     env_file:
       - .env
+    networks:
+      - gateway-network
+
+networks:
+  gateway-network:
+    external: true
